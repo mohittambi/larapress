@@ -4,12 +4,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{!! isset($title)?$title:'Dashboard'!!}</title>
-     <link rel="stylesheet" href="{{asset('assets/admin/vendors/bootstrap/dist/css/bootstrap.min.css')}}">
-     <link rel="stylesheet" href="{{asset('assets/admin/vendors/font-awesome/css/font-awesome.min.css')}}">
-     <link rel="stylesheet" href="{{asset('assets/admin/vendors/nprogress/nprogress.css')}}">
-      <link rel="stylesheet" href="{{asset('assets/admin/vendors/bootstrap-daterangepicker/daterangepicker.css')}}">
-       <link rel="stylesheet" href="{{asset('assets/admin/custom.min.css')}}">  
-       
+
+
+    <link rel="icon" href="{{asset('images/favicon.png')}}" type="image/ico" />
+    <link rel="stylesheet" href="{{asset('assets/admin/vendors/bootstrap/dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/admin/vendors/font-awesome/css/font-awesome.min.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/admin/vendors/nprogress/nprogress.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/admin/vendors/bootstrap-daterangepicker/daterangepicker.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/admin/custom.min.css')}}">
+
        @yield('uniquepagestyle')
 
   </head>
@@ -53,10 +56,10 @@
         cursor: pointer;
       }
       .paginate_button.current {
-  background-color: gray !important;
-  color: white !important;
-}
+        background-color: gray !important;
+        color: white !important;
+      }
     </style>
 
-        
+
   <meta name="csrf-token" content="{{ csrf_token() }}">

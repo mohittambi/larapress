@@ -2,7 +2,7 @@
 @section('content')
   <div class="right_col" role="main">
     <div class="">
-      @include('admin.includes.breadcum')
+      <!-- @include('admin.includes.breadcum') -->
       <div class="clearfix"></div>
       <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
@@ -17,11 +17,11 @@
                 <thead>
                 <tr>
                   <th width="10%">Id</th>
-                  <th width="25%"  >Full Name </th>
-                  <th width="30%"  >Email </th>
-                  <th width="15%"  >Created At</th>
-                  <th width="10%"  >Status</th>
-                  <th width="10%" class="noneedtoshort" >Action</th>
+                  <th width="25%">Post Title </th>
+                  <th width="30%">Excerpt</th>
+                  <th width="15%">Created At</th>
+                  <th width="10%">Status</th>
+                  <th width="10%" class="noneedtoshort">Action</th>
                 </tr>
                 </thead>
               </table>
@@ -81,15 +81,15 @@ function changeStatus(id)
     serverSide: true,
     order: [[0, "desc" ]],
     "ajax":{
-      "url": '{!! route('admin.users.datatables') !!}',
+      "url": '{!! route('admin.posts.datatables') !!}',
       "dataType": "json",
       "type": "POST",
       "data":{ _token: "{{csrf_token()}}"}
     },
     columns: [
       { data: 'id', name: 'id', orderable:true },
-      { data: 'full_name', name: 'full_name', orderable:true  },
-      { data: 'email', name: 'email', orderable:true},
+      { data: 'post_title', name: 'post_title', orderable:true  },
+      { data: 'post_content', name: 'post_content', orderable:true},
       { data: 'created_at', name: 'created_at', orderable:false },
       { data: 'status', name: 'status', orderable:false},
       { data: 'action', name: 'action', orderable:false }
@@ -98,7 +98,7 @@ function changeStatus(id)
       { "searchable": false, "targets": 0 }
     ],
     language: {
-      searchPlaceholder: "Search by id,full name or email"
+      searchPlaceholder: "Search by id, title or content"
     }
     });
   });

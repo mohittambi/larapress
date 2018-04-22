@@ -16,7 +16,7 @@ class Controller extends BaseController
     {
         foreach ($validation->getMessages() as $field_name => $messages){
             if(!isset($firstError)){
-                $firstError        =$messages[0];
+                $firstError = $messages[0];
             }
         }
         return $firstError;
@@ -28,6 +28,6 @@ class Controller extends BaseController
         return substr(str_shuffle(str_repeat($pool, $length)), 0, $length);
     }
 
-   
+
 
 }

@@ -1,12 +1,12 @@
   <div class="col-md-3 left_col">
           <div class="left_col scroll-view">
             <div class="navbar nav_title" style="border: 0;">
-              <a href="{!! route('admin.dashboard')!!}" class="site_title"><i class="fa fa-paw"></i> <span>{!! getSettings()['SITE_NAME'] !!}</span></a>
+              <a href="{!! route('admin.dashboard')!!}" class="site_title"> <span>{!! getSettings()['SITE_NAME'] !!}</span></a>
             </div>
 
             <div class="clearfix"></div>
 
-            
+
             <div class="profile clearfix">
               <div class="profile_pic">
                 <img src="{{ getLoggedUserInfo()->image?asset('uploads/users/thumb/'.getLoggedUserInfo()->image.''):asset('images/user.png') }}" alt="..." class="img-circle profile_img">
@@ -21,7 +21,7 @@
             <br />
 
             <!-- sidebar menu -->
-           
+
 
            <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
               <div class="menu_section">
@@ -36,12 +36,22 @@
                     </ul>
                   </li-->
 
-
                   <li><a href="{!! route('admin.dashboard')!!}"><i class="fa fa-dashboard"></i> Dashboard</a></li>
-                   <li><a href="{!! route('users.index')!!}"><i class="fa fa-users"></i> Users</a></li>
+                  <li><a href="{!! route('users.index')!!}"><i class="fa fa-users"></i> Users</a></li>
                   <li><a href="{!! route('settings.index')!!}"><i class="fa fa-cog"></i> Settings</a></li>
 
+                  <li><a><i class="fa fa-edit"></i> Posts Management <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="{!! route('admin.posts.all')!!}"><i class="fa fa-cog"></i> All Posts</a></li>
+                      <li><a href="{!! route('admin.posts.add')!!}"><i class="fa fa-cog"></i> Add Post</a></li>
+                    </ul>
+                  </li>
 
+                  <li><a><i class="fa fa-edit"></i> Category Management <span class="fa fa-chevron-down"></span></a>
+                    <ul class="nav child_menu">
+                      <li><a href="{!! route('admin.categories.add')!!}"><i class="fa fa-cog"></i> Add Category</a></li>
+                    </ul>
+                  </li>
 
                   <!--li><a><i class="fa fa-edit"></i> Forms <span class="fa fa-chevron-down"></span></a>
                     <ul class="nav child_menu">
@@ -147,7 +157,7 @@
                         <li><a href="#level1_2">Level One</a>
                         </li>
                     </ul>
-                  </li--> 
+                  </li-->
 
 
                   <!--li><a href="javascript:void(0)"><i class="fa fa-laptop"></i> Landing Page <span class="label label-success pull-right">Coming Soon</span></a></li-->

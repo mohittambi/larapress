@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 05, 2018 at 07:02 AM
+-- Generation Time: Apr 16, 2018 at 01:30 PM
 -- Server version: 10.1.24-MariaDB
 -- PHP Version: 7.1.6
 
@@ -83,7 +83,7 @@ CREATE TABLE `users` (
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0 = Inactive, 1 = Active',
-  `role` enum('A','U','D') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'U' COMMENT 'U = User, A = Admin, D= Developer',
+  `role` enum('A','U','D') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'U' COMMENT 'A for super admin,U for User,D for developer',
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `password_reset_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,

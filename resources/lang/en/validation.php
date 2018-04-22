@@ -88,6 +88,8 @@ return [
     'uploaded'             => 'The :attribute failed to upload.',
     'url'                  => 'The :attribute format is invalid.',
 
+    'is_valid_user'=> 'USERNOTFOUND',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Language Lines

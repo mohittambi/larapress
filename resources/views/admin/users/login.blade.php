@@ -12,7 +12,7 @@
         <div class="container">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="assets/login/images/icons/favicon.ico"/>
+  <link rel="icon" href="{{asset('images/favicon.png')}}" type="image/ico" />
   <div class="limiter">
     <div class="container-login100">
       <div class="wrap-login100">

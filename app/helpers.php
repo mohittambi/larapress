@@ -8,17 +8,17 @@ use App\Model\Setting;
 if (! function_exists('mailSend')) {
  function mailSend($data)
     {
-        try { 
+        try {
             Mail::send('emails.forgot_password', ['data' => $data], function($message) use ($data)
             {
                 $message->from('oliver7415@googlemail.com', 'Passing Buy');
                 $message->to( $data['email'] )->subject("Forgot Password" );
 
-            }); 
+            });
             return true;
         } catch (Exception $ex) {
             dd($ex);
-            return false;            
+            return false;
         }
     }
 }
@@ -45,7 +45,7 @@ if (! function_exists('getLoggedUserInfo')) {
 if ( ! function_exists('uploadwithresize'))
 {
     function uploadwithresize($file,$path)
-    { 
+    {
         $h=200;
         $w= 200;
         $fileName = time().rand(111111111,9999999999).'.'.$file->getClientOriginalExtension();
@@ -99,7 +99,7 @@ if (!function_exists('buttonHtml')) {
             "edit" => "<span class='f-left margin-r-5'><a data-toggle='tooltip'  class='btn btn-primary btn-xs' title='Edit' href='" . $link . "'><i class='fa fa-pencil-square-o' aria-hidden='true'></i></a></span>",
             "Active" => '<span class="f-left margin-r-5"> <a data-toggle="tooltip" class="btn btn-success btn-xs" title="Active" href="' . $link . '"><i class="fa fa-check" aria-hidden="true"></i></a></span>',
             "Inactive" => '<span class="f-left margin-r-5"> <a data-toggle="tooltip" class="btn btn-warning btn-xs" title="Inactive" href="' . $link . '"><i class="fa fa-times" aria-hidden="true"></i></a></span>',
-           
+
             "delete" => '<form method="POST" action="' . $link . '" accept-charset="UTF-8" style="display:inline"><input name="_method" value="DELETE" type="hidden">
 ' . csrf_field() . '<span><button data-toggle="tooltip" title="Delete" type="submit" class="btn btn-danger btn-xs"><i class="fa fa-trash-o" aria-hidden="true"></i></button></span></form>',
             "view" => '<span class="f-left margin-r-5"><a data-toggle="tooltip"  class="btn btn-info btn-xs" title="View" href="' . $link . '"><i class="fa fa-eye" aria-hidden="true"></i></a></span>'
@@ -125,7 +125,7 @@ if (!function_exists('getButtons')) {
             $html  .= buttonHtml($arr['key'],$arr['link']);
         }
         return $html;
-      
+
     }
 
 }
@@ -136,38 +136,49 @@ if (!function_exists('getButtons')) {
 if (!function_exists('getStatus')) {
 
     function getStatus($current_status,$id) {
-       $html = '';
+      $html = '';
       switch ($current_status) {
-          case '1':
-               $html =  '<span class="f-left margin-r-5" id = "status_'.$id.'"><a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Active" onClick="changeStatus('.$id.')" >Active</a></span>';
+              case '1':
+                $html =  '<span class="f-left margin-r-5" id = "status_'.$id.'"><a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Active" onClick="changeStatus('.$id.')" >Active</a></span>';
               break;
-               case '0':
-               $html =  '<span class="f-left margin-r-5" id = "status_'.$id.'"><a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactive" onClick="changeStatus('.$id.')" >Inactive</a></span>';
+
+              case '0':
+                $html =  '<span class="f-left margin-r-5" id = "status_'.$id.'"><a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactive" onClick="changeStatus('.$id.')" >Inactive</a></span>';
               break;
-          
-          default:
-            
+
+              default:
+
               break;
+
       }
 
       return $html;
-      
+
     }
 
 }
 
+if (!function_exists('getStatusPost')) {
 
+    function getStatusPost($current_status,$id) {
+      $html = '';
+      switch ($current_status) {
+              case 'publish':
+                $html =  '<span class="f-left margin-r-5" id = "status_'.$id.'"><a data-toggle="tooltip"  class="btn btn-success btn-xs" title="Published" onClick="changeStatus('.$id.')" >Published</a></span>';
+              break;
 
+              case 'unpublish':
+                $html =  '<span class="f-left margin-r-5" id = "status_'.$id.'"><a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="UnPublished" onClick="changeStatus('.$id.')" >UnPublished</a></span>';
+              break;
 
+              default:
+              $html="Bingo!";
+              break;
 
+      }
 
+      return $html;
 
+    }
 
-
-
-
-
-
-
-
-
+}

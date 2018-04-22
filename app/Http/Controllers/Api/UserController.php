@@ -14,12 +14,12 @@ use Illuminate\Support\Facades\Hash;
 use DB;
 
 class UserController extends Controller
-{   
+{
 
     private $uploadsfolder;
     public function __construct()
-    { 
-        $this->uploadsfolder = asset('public/uploads/');    
+    {
+        $this->uploadsfolder = asset('public/uploads/');
     }
 
 
@@ -42,17 +42,15 @@ class UserController extends Controller
     public function signup(Request $request)
     {
         $validator = Validator::make($request->all(), [
-                        
                         'full_name' => 'required|max:255',
                         'email' => 'required|email|max:255|unique:users',
-                        'password' => 'required|max:50|min:6',
+                        'password' => 'required|max:50|min:8',
                         'device_type'=>'required',
                         'device_id'=>'required'
-                       
                     ]);
-        if ($validator->fails()) 
+        if ($validator->fails())
         {
-            $error = $this->validationHandle($validator->messages()); 
+            $error = $this->validationHandle($validator->messages());
             return response()->json(['status'=>false,'message'=>$error]);
         }
         else
@@ -84,19 +82,18 @@ class UserController extends Controller
     public function updateProfile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-                        'user_id' => 'required',
+                        'user_id' => 'required|isValidUser:'.$request->user_id,
                         'full_name'=>'required',
-                        
-                       'email' => 'required|email|unique:users,email,' . $request->user_id,
-                      
+                        'email' => 'required|email|unique:users,email,' . $request->user_id,
                     ]);
-        if ($validator->fails()) 
+        if ($validator->fails())
         {
-            $error = $this->validationHandle($validator->messages()); 
+            $error = $this->validationHandle($validator->messages());
             return response()->json(['status'=>false,'message'=>$error]);
         }
         else
         {
+
             $row =  User::where('id',$request->user_id)->first();
             $previous_row = $row;
             $row->full_name= $request->full_name;
@@ -105,13 +102,13 @@ class UserController extends Controller
                 {
                     $file = $request->file('profile_pic');
                     $image = uploadwithresize($file,'users');
-                   
+
                     if($previous_row->image)
                     {
                         unlinkfile('users',$previous_row->image);
                     }
                     $row->image= $image;
-                   
+
                 }
             $row->save();
             $user = $this->getuserdetailfromObjectArray($row);
@@ -122,49 +119,49 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-                        'username' => 'required',
+                        'email' => 'required|email',
                         'password' => 'required',
                         'device_type'=>'required',
                         'device_id'=>'required',
                     ]);
-        if ($validator->fails()) 
+        if ($validator->fails())
         {
-            $error = $this->validationHandle($validator->messages()); 
+            $error = $this->validationHandle($validator->messages());
             return response()->json(['status'=>false,'message'=>$error]);
         }
         else
         {
-            $user_name = $request->username;
+            $user_name = $request->email;
             $password = bcrypt($request->password);
-            $row = User::where('role','U') 
+            $row = User::where('role','U')
                     ->where(function($query) use ($user_name){
                         $query  ->where('email', $user_name);
                         $query->orWhere('username', $user_name);
                     })
-                   
+
                     ->first();
 
-            if ($row && Hash::check($request->password, $row->password)) 
+            if ($row && Hash::check($request->password, $row->password))
             {
                 if($row->status == '1')
                 {
                     $user =  $this->getuserdetailfromObjectArray($row);
 
-                    $this->manageDeviceIdAndToken($row->id,$request->device_id,$request->device_type,'add');               
+                    $this->manageDeviceIdAndToken($row->id,$request->device_id,$request->device_type,'add');
                     return response()->json(['status'=>true,'message'=>'login successfully','data'=>$user]);
                 }
                 else
                 {
                     return response()->json(['status'=>false,'message'=>'Your account is deactivated.']);
                 }
-                
+
 
             }
             else
             {
-                return response()->json(['status'=>false,'message'=>'Invalid username or password']);
+                return response()->json(['status'=>false,'message'=>'Invalid email or password']);
             }
-            
+
         }
     }
 
@@ -176,11 +173,11 @@ class UserController extends Controller
                         'social_id' => 'required',
                         'device_type'=>'required',
                         'device_id'=>'required',
-                        
+
                     ]);
-        if ($validator->fails()) 
+        if ($validator->fails())
         {
-            $error = $this->validationHandle($validator->messages()); 
+            $error = $this->validationHandle($validator->messages());
             return response()->json(['status'=>false,'message'=>$error]);
         }
         else
@@ -189,14 +186,14 @@ class UserController extends Controller
             if(isset($request->email) && $request->email !="")
             {
                 $email = $request->email;
-                $social_row = $social_row->whereHas('getAssociateUserWithSocial',function ($query) use($email) {  
+                $social_row = $social_row->whereHas('getAssociateUserWithSocial',function ($query) use($email) {
                         $query->where('email', $email)
                         ->where('role', 'U')
 
                         ;
                     });
             }
-            $social_row = $social_row->first();    
+            $social_row = $social_row->first();
             if($social_row)
             {
                 $row = $social_row->getAssociateUserWithSocial;
@@ -205,7 +202,6 @@ class UserController extends Controller
             }
             else
             {
-
                  if(isset($request->email) && $request->email !="")
                  {
                     $user = User::where('email',$request->email)->first();
@@ -219,27 +215,23 @@ class UserController extends Controller
                     {
                         return response()->json(['status'=>true,"social"=>false,'message'=>'Do not have any social links']);
                     }
-
                  }
                 else
                 {
                     return response()->json(['status'=>true,"social"=>false,'message'=>'Do not have any social links']);
                 }
-
-               
             }
-            
         }
     }
 
-   public function forgotPassword(Request $request)
+    public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
                         'email' => 'required|email',
                     ]);
-        if ($validator->fails()) 
+        if ($validator->fails())
         {
-            $error = $this->validationHandle($validator->messages()); 
+            $error = $this->validationHandle($validator->messages());
             return response()->json(['status'=>false,'message'=>$error]);
         }
         else
@@ -272,7 +264,7 @@ class UserController extends Controller
     {
         SocialAccount::updateOrCreate(
         ['social_id'=>$social_id,'social_type'=>$social_type],['user_id' => $user_id]
-        ); 
+        );
     }
 
     public function manageDeviceIdAndToken($user_id,$device_id,$device_type,$methodName)
@@ -282,7 +274,7 @@ class UserController extends Controller
         {
              UserDevice::updateOrCreate(
                 ['user_id' => $user_id,'device_id'=>$device_id,'device_type'=>$device_type]
-                ); 
+                );
         }
         if($methodName=='delete')
         {
@@ -293,22 +285,16 @@ class UserController extends Controller
         }
     }
 
-
-
     public function getuserdetailfromObjectArray($row)
     {
-       
-
         $user = (object)array(
-                    'user_id'=>$row->id,
-                    'full_name'=>$row->full_name,
-                    'email'=>$row->email,
-                    'profile_pic'=>$row->image?$this->uploadsfolder.'/users/'.$row->image:asset('images/user.png'),
-                    'profile_pic_thumb'=>$row->image?$this->uploadsfolder.'/users/thumb/'.$row->image:asset('images/user.png'),
-                   
-                    'status'=>$row->status,
-                   
-                    'created_at'=> date('Y-m-d H:i',strtotime($row->created_at))
+                  'user_id'=>$row->id,
+                  'full_name'=>$row->full_name,
+                  'email'=>$row->email,
+                  'profile_pic'=>$row->image?$this->uploadsfolder.'/users/'.$row->image:asset('images/user.png'),
+                  'profile_pic_thumb'=>$row->image?$this->uploadsfolder.'/users/thumb/'.$row->image:asset('images/user.png'),
+                  'status'=>$row->status,
+                  'created_at'=> date('Y-m-d H:i',strtotime($row->created_at))
                 );
         return $user;
     }
@@ -316,19 +302,19 @@ class UserController extends Controller
     public function changePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-                        'user_id' => 'required',
+                        'user_id' => 'required|isValidUser:'.$request->user_id,
                         'currentPassword'=>'required',
-                        'newPassword'=>'required'  
+                        'newPassword'=>'required'
                     ]);
-        if ($validator->fails()) 
+        if ($validator->fails())
         {
-            $error = $this->validationHandle($validator->messages()); 
+            $error = $this->validationHandle($validator->messages());
             return response()->json(['status'=>false,'message'=>$error]);
         }
         else
         {
             $row = User::whereId($request->user_id)->first();
-            if (Hash::check($request->currentPassword, $row->password)) 
+            if (Hash::check($request->currentPassword, $row->password))
             {
                 $row->password = bcrypt($request->newPassword);
                 $row->save();
@@ -336,28 +322,26 @@ class UserController extends Controller
             }
             else
             {
-                return response()->json(['status'=>false,'message'=>'Old password is not correct']);
+                return response()->json(['status'=>false,'message'=>'Current password is not correct']);
             }
         }
     }
 
-
-
     public function getUserProfile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-                        'user_id' => 'required'
-                        
+                        'user_id' => 'required|isValidUser:'.$request->user_id
+
                     ]);
-        if ($validator->fails()) 
+        if ($validator->fails())
         {
-            $error = $this->validationHandle($validator->messages()); 
+            $error = $this->validationHandle($validator->messages());
             return response()->json(['status'=>false,'message'=>$error]);
         }
         else
         {
             $row = User::where('id',$request->user_id)
-                    
+
                     ->first();
             if($row)
             {
@@ -368,36 +352,25 @@ class UserController extends Controller
             {
                 return response()->json(['status'=>false,'message'=>'Invalid user']);
             }
-
         }
     }
 
-
-
-
-     public function logout(Request $request)
-        {
-            $validator = Validator::make($request->all(), [
-                            'user_id' => 'required',
-                            'device_type'=>'required',
-                            'device_id'=>'required'
-                        ]);
-            if ($validator->fails()) 
-            {
-                $error = $this->validationHandle($validator->messages()); 
-                return response()->json(['status'=>false,'message'=>$error]);
-            }
-            else
-            {
-                 $this->manageDeviceIdAndToken($request->user_id,$request->device_id,$request->device_type,'delete');
-                return response()->json(['status'=>true,'message'=>'Logout successfully']);
-
-            }
-        }
-
-
-
-    
-
-
-}  
+    public function logout(Request $request)
+    {
+      $validator = Validator::make($request->all(), [
+                    'user_id' => 'required',
+                    'device_type'=>'required',
+                    'device_id'=>'required'
+                  ]);
+      if ($validator->fails())
+      {
+        $error = $this->validationHandle($validator->messages());
+        return response()->json(['status'=>false,'message'=>$error]);
+      }
+      else
+      {
+        $this->manageDeviceIdAndToken($request->user_id,$request->device_id,$request->device_type,'delete');
+        return response()->json(['status'=>true,'message'=>'Logout successfully']);
+      }
+    }
+}

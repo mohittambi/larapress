@@ -5,7 +5,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Model\User;
 use DB;
-use Illuminate\Support\Facades\Input;   
+use Illuminate\Support\Facades\Input;
 use Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -20,38 +20,32 @@ class UserController extends Controller
     {
         $this->model = 'users';
         $this->title = 'Users';
-          $this->pmodule = 'users';
-    } 
-
-   
-
-   
-
+        $this->pmodule = 'users';
+    }
 
     public function login()
     {
-        $title= 'Login'; 
+        $title= 'Login';
         return view('admin.users.login',compact('title'));
     }
 
     public function makelogin(Request $request)
    {
-        
         try {
                 $validator = Validator::make($request->all(), [
                             'username' => 'required',
                             'password' => 'required',
                 ]);
-                if ($validator->fails()) 
+                if ($validator->fails())
                 {
                     return redirect()->back()->withInput()->withErrors($validator->errors());
                 }
-                else 
+                else
                 {
                    $username = $request->username;
                    $password = bcrypt($request->password);
                    $user = User::where('email',$username)->first();
-                  
+
                     if($user && Hash::check($request->password, $user->password))
                    {
                         Session::put('AdminLoggedIn', ['user_id'=>$user->id,'userData'=> $user]);
@@ -64,14 +58,14 @@ class UserController extends Controller
                         return redirect()->back()->withInput();
                    }
                 }
-            } 
-            catch (\Exception $e) 
+            }
+            catch (\Exception $e)
             {
                 $msg = $e->getMessage();
                 Session::flash('danger',$msg);
                 return redirect()->back()->withInput();
             }
-           
+
    }
 
     public function logout()
@@ -86,7 +80,7 @@ class UserController extends Controller
         $row =  User::whereId($user_id)->first();
         $title = 'My-setting';
         $breadcum = ['My-setting'=>''];
-       return view('admin.users.change_profile_password',compact('title','breadcum','row')); 
+       return view('admin.users.change_profile_password',compact('title','breadcum','row'));
     }
 
     public function userPostChangePassword(Request $request)
@@ -97,7 +91,7 @@ class UserController extends Controller
             'confirm_password' => 'required|same:new_password',
         );
         $validator = Validator::make(Input::all(), $rules);
-        if ($validator->fails()) 
+        if ($validator->fails())
         {
             return redirect()->back()->withErrors($validator->errors());
         }
@@ -111,10 +105,10 @@ class UserController extends Controller
                 $user->save();
                 Session::flash('success', 'Password updated successfully.');
                 return redirect()->back();
-            } 
+            }
             else
             {
-                Session::flash('warning', 'Wrong old password');
+                Session::flash('warning', 'Current password is not correct');
                 return redirect()->back();
             }
         }
@@ -124,9 +118,9 @@ class UserController extends Controller
     {
         $user_id =  Session::get('AdminLoggedIn')['user_id'];
         $row = User::whereId($user_id)->first();
-        $title= 'My-profile'; 
+        $title= 'My-profile';
         $breadcum = ['My profile'=>''];
-       
+
         return view('admin.users.myProfile',compact('title','row','breadcum'));
 
     }
@@ -137,36 +131,36 @@ class UserController extends Controller
         try
         {
             $validator = Validator::make($request->all(), [
-                'full_name' => 'required|max:255',
-                 'image_update' =>  'mimes:jpeg,jpg,png,gif',
-                'email' => 'required|email|unique:users,email,' . $row->id,
-                ]);
-            if ($validator->fails()) 
+              'full_name' => 'required|max:255',
+              'image_update' =>  'mimes:jpeg,jpg,png,gif',
+              'email' => 'required|email|unique:users,email,' . $row->id,
+            ]);
+            if ($validator->fails())
             {
                 return redirect()->back()->withInput()->withErrors($validator->errors());
             }
             else
             {
-                 $previous_row = $row;
+                $previous_row = $row;
                 $row->full_name= $request->full_name;
                 $row->email=$request->email;
-                 if($request->file('image_update'))
+                if($request->file('image_update'))
                 {
                     $file = $request->file('image_update');
                     $image = uploadwithresize($file,'users');
-                   
+
                     if($previous_row->image)
                     {
                         unlinkfile('users',$previous_row->image);
                     }
 
                     $row->image= $image;
-                   
+
                 }
                 $row->save();
                 Session::flash('success', 'Profile updated successfully.');
                 return redirect()->route('admin.profile');
-            }  
+            }
         }
         catch(\Exception $e)
         {
@@ -182,18 +176,14 @@ class UserController extends Controller
         $title = $this->title;
         $model = $this->model;
        // $lists = User::where('role','U')->get();
-
-       
-
-
         $breadcum = [$this->title=>route($this->model.'.index'),'Listing'=>''];
-        return view('admin.users.index',compact('title','model','breadcum')); 
+        return view('admin.users.index',compact('title','model','breadcum'));
     }
 
     public function userListWithDatatable(Request $request)
     {
-        $columns = array( 
-                0 =>'id', 
+        $columns = array(
+                0 =>'id',
                 1 =>'full_name',
                 2 =>'email',
                 3 =>'created_at',
@@ -201,16 +191,14 @@ class UserController extends Controller
                 5=> 'action',
             );
 
-       
-
         $totalData = User::where('role','U')->count();
-        $totalFiltered = $totalData; 
+        $totalFiltered = $totalData;
         $limit = $request->input('length');
         $start = $request->input('start');
         $order = $columns[$request->input('order.0.column')];
         $dir = $request->input('order.0.dir');
         if(empty($request->input('search.value')))
-        {            
+        {
             $posts = User::where('role','U')
                 ->offset($start)
                 ->limit($limit)
@@ -219,57 +207,50 @@ class UserController extends Controller
         }
         else
         {
-            $search = $request->input('search.value'); 
+            $search = $request->input('search.value');
             $posts = User::where('role','U')
-                        ->where(function($query) use ($search){
-                        $query->where('id','LIKE',"%{$search}%")
-                        
-                         ->orWhere('full_name','LIKE',"%{$search}%")
-                          ->orWhere('email','LIKE',"%{$search}%");
-                        })
-                    ->offset($start)
-                    ->limit($limit)
-                    ->orderBy($order,$dir)
-                    ->get();
+                      ->where(function($query) use ($search){
+                      $query->where('id','LIKE',"%{$search}%")
+                            ->orWhere('full_name','LIKE',"%{$search}%")
+                            ->orWhere('email','LIKE',"%{$search}%");
+                      })
+                      ->offset($start)
+                      ->limit($limit)
+                      ->orderBy($order,$dir)
+                      ->get();
             $totalFiltered = User::where('role','U')
-                                
-                               ->where(function($query) use ($search){
-                                $query->where('id','LIKE',"%{$search}%")
-                               
-                                 ->orWhere('full_name','LIKE',"%{$search}%")
-                                  ->orWhere('email','LIKE',"%{$search}%");
-                                })
-                                ->count();
-            
+                              ->where(function($query) use ($search){
+                              $query->where('id','LIKE',"%{$search}%")
+                                    ->orWhere('full_name','LIKE',"%{$search}%")
+                                    ->orWhere('email','LIKE',"%{$search}%");
+                              })
+                              ->count();
+
         }
 
-
-         $data = array();
+        $data = array();
         if(!empty($posts))
         {
             foreach ($posts as $list)
             {
-                
                 $nestedData['id'] = $list->id;
-                $nestedData['created_at'] = date('Y-m-d H:i',strtotime($list->created_at));
-               
+                $nestedData['created_at'] = date('d-m-Y H:i A',strtotime($list->created_at));
                 $nestedData['status'] = getStatus($list->status,$list->id);
                 $nestedData['email'] =  $list->email;
                 $nestedData['full_name'] =  $list->full_name;
-                $nestedData['action'] =  getButtons([
-                                ['key'=>'view','link'=>route('admin.users.view',$list->slug)]
-                            ]);
+                $nestedData['action'] = getButtons([
+                                          ['key'=>'view','link'=>route('admin.users.view',$list->slug)]
+                                        ]);
                 $data[] = $nestedData;
             }
         }
-
-      $json_data = array(
-                "draw"            => intval($request->input('draw')),  
-                "recordsTotal"    => intval($totalData),  
-                "recordsFiltered" => intval($totalFiltered), 
-                "data"            => $data   
+        $json_data = array(
+                "draw"            => intval($request->input('draw')),
+                "recordsTotal"    => intval($totalData),
+                "recordsFiltered" => intval($totalFiltered),
+                "data"            => $data
                 );
-        echo json_encode($json_data); 
+        echo json_encode($json_data);
     }
 
     public function userStatusUpdate(Request $request)
@@ -286,9 +267,9 @@ class UserController extends Controller
                case '0':
                $html =  '<a data-toggle="tooltip"  class="btn btn-danger btn-xs" title="Inactive" onClick="changeStatus('.$user_id.')" >Inactive</a>';
               break;
-          
+
           default:
-            
+
               break;
       }
       return $html;
@@ -305,13 +286,13 @@ class UserController extends Controller
         if($row)
         {
             $breadcum = [$this->title=>route($this->model.'.index'),$row->full_name=>''];
-            return view('admin.users.userView',compact('title','model','breadcum','row')); 
+            return view('admin.users.userView',compact('title','model','breadcum','row'));
         }
         else
         {
             Session::flash('warning', 'Invalid request');
            return redirect()->back();
-        }   
+        }
     }
- 
+
 }

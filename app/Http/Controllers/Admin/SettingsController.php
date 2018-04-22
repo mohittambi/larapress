@@ -11,8 +11,6 @@ use Session;
 
 class SettingsController extends Controller
 {
-
-    
     protected $model;
     protected $title;
     protected $pmodule;
@@ -29,30 +27,30 @@ class SettingsController extends Controller
         $model = $this->model;
         $lists = Setting::get();
         $breadcum = [$this->title=>route($this->model.'.index'),'Listing'=>''];
-        return view('admin.settings.index',compact('title','lists','model','breadcum')); 
+        return view('admin.settings.index',compact('title','lists','model','breadcum'));
     }
 
     public function create()
     {
-        
+
     }
 
     public function store(Request $request)
     {
-        
+
     }
 
 
     public function show($id)
     {
-        
+
     }
 
 
     public function edit($slug)
     {
         try
-        { 
+        {
             $row =  Setting::whereSlug($slug)->first();
             if($row)
             {
@@ -66,7 +64,7 @@ class SettingsController extends Controller
                 Session::flash('warning', 'Invalid Request');
                 return redirect()->back();
             }
-            
+
         }
         catch(\Exception $e)
         {
@@ -89,25 +87,22 @@ class SettingsController extends Controller
                 $request->description = $request->start_from.'-'.$request->end_from;
             }
 
-
-
-
             if($row->parameter_type == 'file' )
             {
                 if($request->file('description'))
                 {
                     $file = $request->file('description');
-                    $request->description = upload($file, 'settings'); 
+                    $request->description = upload($file, 'settings');
                 }
                 else
                 {
                     $request->description = $row->description;
-                }  
+                }
             }
             $row->description=$request->description;
             $row->save();
             Session::flash('success', 'Record updated successfully.');
-            return redirect()->route($this->model.'.index');   
+            return redirect()->route($this->model.'.index');
         }
         catch(\Exception $e)
         {
@@ -117,12 +112,9 @@ class SettingsController extends Controller
         }
     }
 
-
     public function destroy($slug)
     {
-       
+
     }
-
-
 
 }
